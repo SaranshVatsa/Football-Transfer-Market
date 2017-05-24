@@ -1,0 +1,612 @@
+//Program to create a file that stores the details of players that have been transfer listed.
+
+#include<iostream.h>
+#include<conio.h>
+#include<fstream.h>
+#include<stdio.h>
+#include<string.h>
+#include<iomanip.h>
+
+class Player
+{
+	private:
+	int age;            //To store the age of the player
+	char name[30];      //To store the name of the player
+	char team[30];      //To store the name of the team
+	long price;         //To store the price of the player
+	char position[30];  //To store the position of the player
+	long salary;        //To store the salary of the player
+	int srno;           //To store the serial number of the player
+
+	public:
+
+	Player()
+	{
+		srno=0;
+	}
+	int Generate_SrNo();
+	void Insert();      //Function to insert the player
+	void Display();     //Function to display the player details
+	void Modify();      //Function change the details of the player that has been transferred
+	void Delete();      //Function to delete a player
+	void Search();      //Function to search a player
+};
+
+int Player::Generate_SrNo()      //To auto generate player ID
+{
+	int i=0;
+	ifstream fin("Info.DAT", ios::in|ios::binary);
+	while(fin.read((char*)this, sizeof(Player)))   //To read till the end of file
+	{
+	      i=srno;    //To find the last serial no. already existing
+	}
+	i++;
+	return(i);    //To return the new ID
+}
+void Player::Insert()
+{
+	//Insert a Player in the Transfer Market.
+	clrscr();
+	char n[20];
+	ofstream fout("Info.DAT",ios::app|ios::binary);
+	//Checking whether the file can be opened or not
+	if(fout==NULL)
+	{
+		cout<<"\n\nFile could not be opened.";
+		return;
+	}
+	srno=Generate_SrNo();
+	cout<<"\n Enter Player "<<srno<<" Detalis";
+	cout<<"\n ---------------------------\n\n";
+		cout<<" Name: ";
+		gets(name);
+		cout<<" Current Team: ";
+		gets(team);
+		cout<<" Age: ";
+		cin>>age;
+		cout<<" Price (in $): ";
+		cin>>price;
+		cout<<" Position: ";
+		gets(position);
+		cout<<" Salary (in $/week): ";
+		cin>>salary;
+		fout.write((char*)this, sizeof(Player));  //To write the entered details to the file
+		cout<<"\n\n The player details have been entered.";
+	fout.close();
+	return;
+}
+
+void Player::Display()
+{
+	//Display the Player in the Transfer Market
+	clrscr();
+	//Checking whether the file is opened or not
+	ifstream fin("Info.DAT",ios::in|ios::binary);
+	if(fin==NULL)
+	{
+		cout<<"\n\nFile could not be opened.";
+		return;
+	}
+	//TABLE
+	cout<<"\n\t\t\t\tTRANSFER MARKET";
+	cout<<"\n\t\t\t\t--------------";
+	cout<<"\n\n+----+-------------------+-------+----------------+-------+-----------+--------|";
+	cout<<"|SrNo|    Player Name    |  Age  |  Current Team  | Price | Position  | Salary |";
+	cout<<"+----+-------------------+-------+----------------+-------+-----------+--------|";
+	while(fin.read((char*)this,sizeof(Player)))   //To read till the end of file
+	{
+		cout<<"| "<<srno<<"  |";
+		cout<<setw(18)<<setfill(' ')<<name<<" |";
+		cout<<setw(6)<<setfill(' ')<<age<<" |";
+		cout<<setw(15)<<setfill(' ')<<team<<" |";
+		cout<<setw(7)<<setfill(' ')<<price<<"|";
+		cout<<setw(10)<<setfill(' ')<<position<<" |";
+		cout<<setw(7)<<setfill(' ')<<salary<<" |";
+	}
+	cout<<"+----+-------------------+-------+----------------+-------+-----------+--------|";
+	cout<<"\n\n\n\t\t\t(Price in $ and Salary in $/week)";
+	fin.close();
+	return;
+}
+
+
+void Player::Search()
+{
+	int flag=0, ch;
+	char n[30];
+	cout<<"\n\n What do you want to search for?: ";
+	cout<<"\n\n 1. For a player by his name.";
+	cout<<"\n 2. For all players belonging to a certain team.";
+	cout<<"\n 3. For all players who play a certain position. ";
+	cout<<"\n 4. For all players of a certain age group. ";
+	cout<<"\n 5. For all players within a certain budget. ";
+	cout<<"\n\n Enter your choice: ";
+	cin>>ch;
+	if(ch>5||ch<1)
+	{
+		cout<<"\n\nInvalid Choice. ";
+		cout<<"\n\n Press Any Key To Continue. ";
+		getch();
+		return;
+	}
+	//Checking whether the file is opened or not
+	ifstream fin("Info.DAT",ios::in|ios::binary);
+	if(fin==NULL)
+	{
+		cout<<"\n\nFile could not be opened.";
+		return;
+	}
+	int i=0;
+	while(fin.read((char *)this, sizeof(Player)))   //To read till the end of file
+	{
+		i++;
+		switch(ch)
+		{
+			case 1: if(i==1)        //Search the Player by his name
+				{
+					cout<<"\n\n\t\t Press Any Key To Continue";
+					getch();
+					clrscr();
+					cout<<"\n\n Enter the name of the player to be searched for: ";
+					gets(n);
+				}
+				if(strcmp(n, name)==0)
+				{
+					cout<<"\n\n\n\t\t\t\tPLAYER'S DETAILS";
+					cout<<"\n\t\t\t\t--------------";
+					cout<<"\n\n+----+-------------------+-------+----------------+-------+-----------+--------|";
+					cout<<"|SrNo|    Player Name    |  Age  |  Current Team  | Price | Position  | Salary |";
+					cout<<"+----+-------------------+-------+----------------+-------+-----------+--------|";
+
+					cout<<"| "<<srno<<"  |";
+					cout<<setw(18)<<setfill(' ')<<name<<" |";
+					cout<<setw(6)<<setfill(' ')<<age<<" |";
+					cout<<setw(15)<<setfill(' ')<<team<<" |";
+					cout<<setw(7)<<setfill(' ')<<price<<"|";
+					cout<<setw(10)<<setfill(' ')<<position<<" |";
+					cout<<setw(7)<<setfill(' ')<<salary<<" |";
+					flag=1;
+					break;
+				}
+				break;
+
+			case 2: if(i==1)     //Search a Player by his Team
+				{
+					cout<<"\n\n Enter the name of the team to be searched for: ";
+					gets(n);
+					cout<<"\n\n\t\t\tPress Enter To Continue. ";
+					getch();
+					clrscr();
+					//fin.read((char *)this, sizeof(Player));
+					cout<<"\n\t\t\t\t TEAM: "<<n<<"\n\n";
+					cout<<"\n\t\t\t\tPLAYER'S DETAILS";
+					cout<<"\n\t\t\t\t--------------";
+					cout<<"\n\n+----+-------------------+-------+----------------+-------+-----------+--------|";
+					cout<<"|SrNo|    Player Name    |  Age  |  Current Team  | Price | Position  | Salary |";
+					cout<<"+----+-------------------+-------+----------------+-------+-----------+--------|";
+
+					//cout<<"\n Player Details: \n\n";
+				}
+				if(strcmp(n, team)==0)
+				{
+
+
+					cout<<"| "<<srno<<"  |";
+					cout<<setw(18)<<setfill(' ')<<name<<" |";
+					cout<<setw(6)<<setfill(' ')<<age<<" |";
+					cout<<setw(15)<<setfill(' ')<<team<<" |";
+					cout<<setw(7)<<setfill(' ')<<price<<"|";
+					cout<<setw(10)<<setfill(' ')<<position<<" |";
+					cout<<setw(7)<<setfill(' ')<<salary<<" |";
+
+					flag=1;
+				}
+				break;
+
+			case 3: if(i==1)      //Search a player
+				{
+					cout<<"\n\n Enter the position to be searched for: ";
+					gets(n);
+					cout<<"\n\n\t\t\tPress Enter To Continue. ";
+					getch();
+					clrscr();
+					//fin.read((char *)this, sizeof(Player));
+					cout<<"\n\t\t POSITION: "<<n<<"\n";
+					cout<<"\n\t\t\t\tPLAYER'S DETAILS";
+					cout<<"\n\t\t\t\t--------------";
+					cout<<"\n\n+----+-------------------+-------+----------------+-------+-----------+--------|";
+					cout<<"|SrNo|    Player Name    |  Age  |  Current Team  | Price | Position  | Salary |";
+					cout<<"+----+-------------------+-------+----------------+-------+-----------+--------|";
+				}
+				if(strcmp(n, position)==0)
+				{
+
+					cout<<"| "<<srno<<"  |";
+					cout<<setw(18)<<setfill(' ')<<name<<" |";
+					cout<<setw(6)<<setfill(' ')<<age<<" |";
+					cout<<setw(15)<<setfill(' ')<<team<<" |";
+					cout<<setw(7)<<setfill(' ')<<price<<"|";
+					cout<<setw(10)<<setfill(' ')<<position<<" |";
+					cout<<setw(7)<<setfill(' ')<<salary<<" |";
+					flag=1;
+				}
+				break;
+
+			case 4: int l, u;     //Search a Player by his age
+				if(i==1)
+				{
+					cout<<"\n\n Enter the age bracket to be searched for: ";
+					cout<<"\n Upper Limit: ";
+					cin>>u;
+					cout<<"\n Lower Limit: ";
+					cin>>l;
+					cout<<"\n\n\t\t\tPress Enter To Continue. ";
+					getch();
+					clrscr();
+					//fin.read((char *)this, sizeof(Player));
+					cout<<"\t\t Upper Limit: "<<u<<" years.";
+					cout<<"\n\t\t Lower Limit: "<<l<<" years.";
+					cout<<"\n\t\t\t\tPLAYER'S DETAILS";
+					cout<<"\n\t\t\t\t--------------";
+					cout<<"\n\n+----+-------------------+-------+----------------+-------+-----------+--------|";
+					cout<<"|SrNo|    Player Name    |  Age  |  Current Team  | Price | Position  | Salary |";
+					cout<<"+----+-------------------+-------+----------------+-------+-----------+--------|";
+
+
+				}
+				if((age>=l)&&(age<=u))
+				{
+
+					cout<<"| "<<srno<<"  |";
+					cout<<setw(18)<<setfill(' ')<<name<<" |";
+					cout<<setw(6)<<setfill(' ')<<age<<" |";
+					cout<<setw(15)<<setfill(' ')<<team<<" |";
+					cout<<setw(7)<<setfill(' ')<<price<<"|";
+					cout<<setw(10)<<setfill(' ')<<position<<" |";
+					cout<<setw(7)<<setfill(' ')<<salary<<" |";
+					flag=1;
+				}
+				break;
+
+			case 5: long b;
+				if(i==1)    //Search a Player coming under a certain budget
+				{
+					cout<<"\n\n Enter the budget to be searched for: ";
+					cin>>b;
+					cout<<"\n\n\t\t\tPress Enter To Continue. ";
+					getch();
+					clrscr();
+					//fin.read((char *)this, sizeof(Player));
+					cout<<"\t\t\t Budget: "<<b;
+					cout<<"\n\t\t\t\tPLAYER'S DETAILS";
+					cout<<"\n\t\t\t\t--------------";
+					cout<<"\n\n+----+-------------------+-------+----------------+-------+-----------+--------|";
+					cout<<"|SrNo|    Player Name    |  Age  |  Current Team  | Price | Position  | Salary |";
+					cout<<"+----+-------------------+-------+----------------+-------+-----------+--------|";
+
+				}
+				if(price<=b)
+				{
+
+
+					cout<<"| "<<srno<<"  |";
+					cout<<setw(18)<<setfill(' ')<<name<<" |";
+					cout<<setw(6)<<setfill(' ')<<age<<" |";
+					cout<<setw(15)<<setfill(' ')<<team<<" |";
+					cout<<setw(7)<<setfill(' ')<<price<<"|";
+					cout<<setw(10)<<setfill(' ')<<position<<" |";
+					cout<<setw(7)<<setfill(' ')<<salary<<" |";
+
+					flag=1;
+				}
+				break;
+		}
+	}
+	cout<<"+----+-------------------+-------+----------------+-------+-----------+--------|";
+	cout<<"\n\n\n\n\t\t\t(Price in $ and Salary in $/week)";
+	if(flag==0)
+		cout<<"\n\n\n\t\t\t No Suiting Results Found. ";
+	fin.close();
+}
+
+
+void Player::Modify()
+{
+	//To edit Players after the transfer
+	long pos;
+	fstream f("Info.DAT",ios::in|ios::out|ios::binary);
+	//Check whether the file is opened or not
+	if(f==NULL)
+	{
+		cout<<"\n\nFile could not be opened.";
+		return;
+	}
+	int n;
+	cout<<"\n\n Enter the Serial Number of the player who has to be transfered:\n\n ";
+	cin>>n;
+	int flag=0;
+
+	while(f.read((char *)this, sizeof(Player)))    //To read till the end of file
+	{
+		if(n==srno)
+		{
+			cout<<"\n\t\t\t\tPLAYER'S DETAILS";
+			cout<<"\n\t\t\t\t--------------";
+			cout<<"\n\n+----+-------------------+-------+----------------+-------+-----------+--------|";
+			cout<<"|SrNo|    Player Name    |  Age  |  Current Team  | Price | Position  | Salary |";
+			cout<<"+----+-------------------+-------+----------------+-------+-----------+--------|";
+
+			cout<<"| "<<srno<<"  |";
+			cout<<setw(18)<<setfill(' ')<<name<<" |";
+			cout<<setw(6)<<setfill(' ')<<age<<" |";
+			cout<<setw(15)<<setfill(' ')<<team<<" |";
+			cout<<setw(7)<<setfill(' ')<<price<<"|";
+			cout<<setw(10)<<setfill(' ')<<position<<" |";
+			cout<<setw(7)<<setfill(' ')<<salary<<" |";
+
+			cout<<"+----+-------------------+-------+----------------+-------+-----------+--------|";					cout<<"\n\n\n\n\n\n\t\t\t(Price in $ and Salary in $/week)";
+		}
+	}
+	f.close();
+
+	cout<<"\n\n\t\t\tPress Any Key To Continue";
+	getch();
+	clrscr();
+	fstream file("Info.DAT",ios::in|ios::out|ios::binary);
+
+	while(!file.eof())
+	{
+		pos=file.tellg();
+		file.read((char*)this,sizeof(Player));    //To read till the end of file
+		if(n==srno)
+		{
+			cout<<"\n Enter New Details";
+			cout<<"\n -------------------------\n\n";
+			cout<<" Age: ";
+			cin>>age;
+			cout<<" New Team: ";
+			gets(team);
+			cout<<" New Price (in $): ";
+			cin>>price;
+			cout<<" New Salary offered (in $/week): ";
+			cin>>salary;
+			file.seekg(pos);
+			file.write((char*)this,sizeof(Player));   // To write the entered details to the file
+			cout<<"\n\n\n Transfer done. Players details have been changed accordingly.";
+			flag=1;
+			break;
+		   }
+	}
+	if(flag==0)
+		cout<<"\n Player Not Available For Transfer.";
+	file.close();
+	return;
+}
+
+void Player::Delete()
+{
+	//Delete a Player from a transfer market
+	int flag=0;
+	int n;
+	cout<<"\n\nEnter the Serial Number of the player who is to be removed from the transfer \n market: \n\n ";
+	cin>>n;
+	char ch;
+	ifstream fin("Info.DAT",ios::in|ios::binary);
+	ofstream fout("temp.DAT",ios::out|ios::binary);
+	if(fin==NULL)
+	{
+		cout<<"\n\nFile could not be opened.";
+		return;
+	}
+	while(fin.read((char*)this,sizeof(Player)))   //To read till end of file
+	{
+		if(n==srno)
+		{
+				cout<<"\n\t\t\t\tPLAYER'S DETAILS";
+				cout<<"\n\t\t\t\t--------------";
+				cout<<"\n\n+----+-------------------+-------+----------------+-------+-----------+--------|";
+				cout<<"|SrNo|    Player Name    |  Age  |  Current Team  | Price | Position  | Salary |";
+				cout<<"+----+-------------------+-------+----------------+-------+-----------+--------|";
+
+				cout<<"| "<<srno<<"  |";
+				cout<<setw(18)<<setfill(' ')<<name<<" |";
+				cout<<setw(6)<<setfill(' ')<<age<<" |";
+				cout<<setw(15)<<setfill(' ')<<team<<" |";
+				cout<<setw(7)<<setfill(' ')<<price<<"|";
+				cout<<setw(10)<<setfill(' ')<<position<<" |";
+				cout<<setw(7)<<setfill(' ')<<salary<<" |";
+
+				cout<<"+----+-------------------+-------+----------------+-------+-----------+--------|";
+				cout<<"\n\n\n\n\n\n\t\t\t(Price in $ and Salary in $/week)";
+			cout<<"\n\n Do you want to remove this player's name from the transfer market? (Y/N): ";
+			cin>>ch;
+			if(ch=='N'||ch=='n')
+			   fout.write((char*)this,sizeof(Player));
+			flag=1;
+			getch();
+			clrscr();
+			cout<<"\n\n Player Removed From Transfer Market. ";
+			getch();
+		}
+		else
+			fout.write((char*)this,sizeof(Player));      //To write the remaining details to the file
+	}
+	fin.close();
+	fout.close();
+	if(flag==0)
+		cout<<"\n Player is already unavailable for transfer.";
+	else
+	{
+		remove("Info.dat");
+		rename("temp.dat","Info.dat");
+	}
+	return;
+}
+
+void Instructions()
+{
+	cout<<"\n\t\tINSTRUCTIONS TO USE THIS SOFTWARE (Please Read)";
+	cout<<"\n\nThis program can be used to store data regarding the transfers of players\ntaking place in the football market in a season.";
+	cout<<"\n\nYou can carry out various actions upon the players available for transfer using this program to maintain a complete record of the transfers.";
+	cout<<"\n\n\n\n\t\t\t Press Any Key To Continue ";
+	getch();
+	clrscr();
+	cout<<"\n\t\tTHE ACTIONS ARE AS FOLLOWS:\n";
+	cout<<"\n1. Adding a new player to the market: This feature allows you to add another \n   player to the currently existing list of players who are up for transfer.";
+
+	cout<<"\n\n2. Deleting a player from the market: This features allows you to delete a \n   player who is no longer available for transfer, either due to retirement or \n   due to his team not wanting to sell him or any other reasons.";
+
+	cout<<"\n\n3. Transfering a player from one team to another: This feature allows you to \n   change a player's team and price when he has been transfered from one team to   another.";
+
+	cout<<"\n\n4. Searching the market: This feature gives many further options. User can \n   search for a certain player, for all players belonging to a certain team, for   all players playing a certain position, for all players within a certain age    group and for all players whose prices are under a specific budget. Results \n   will be displayed accordingly.";
+
+	cout<<"\n\n5. Display the entire transfer market: This features allows you to access the \n   entire transfer market including all the players available for transfer \n   in the market at that time.";
+	return;
+}
+void main()
+{
+	clrscr();
+	int ch;
+	textbackground(WHITE);
+	textcolor(BLACK);
+
+	cout<<"\n\t\t\tTHE FOOTBALL TRANSFER MARKET";
+	cout<<"\n\n\n\n\n\n\n\nBY: \n\n Abhishek Machale \n\n Hrudesh Chavan \n\n Saransh Vatsa";
+	cout<<"\n\n\n\n\n\n\t\t\tPress Enter to Continue";
+	getch();
+	clrscr();
+	cout<<"\n\n\t\t\t\tINTRODUCTION";
+
+	cout<<"\n\nFootball is the world's most popular and most loved sport. \n\nWhile there are tournaments on international level where players represent theircountries and play for national teams, most of the season consists of matches \nbetween football clubs from different cities in different countries.";
+
+	cout<<"\n\nApart from the game played on the field, another game is played off it, where \nthe owners and management staff of the clubs try to buy new players to help \ntheir club win tournaments and also sell existing players who are no longer \nrequired by the team to make money to sign new players.";
+
+	cout<<"\n\nThese transfers in football are important as this ensures rotation of squads \nevery season and gives the players a chance to play in different countries for  different teams in different atmosphere and conditions, and it also gives the   audience a chance to witness football players from all across the world.";
+
+	cout<<"\n\n\n\t\t\tPress Any Key To Continue";
+	getch();
+	clrscr();
+	cout<<"\n\nThe most important and most highly followed football leagues and teams in the \nworld belong to Europe, mainly the Barclays Premier League (England), La Liga \n(Spain), Bundesliga (Germany), Serie A (Italy) and Ligue 1 (France).";
+
+	cout<<"\n\nTo ensure that players from different parts of the world can be signed by any \nteam in this world, transfer windows for all teams open at the same time twice aseason: Summer transfer windows after the end of a season and befroe the \nbeginning of a new one (Around May-June) and Winter Transfer seasons mid-way \nthrough a season (Around December-January)";
+
+	cout<<"\n\nThis program can be used to keep a record of the transfers happening in the \nseason";
+
+	cout<<"\n\n\n\t\t\tPress Any Key To Contine";
+	getch();
+	clrscr();
+
+	cout<<"\n\n\nTHE DETAILS OF A PLAYER WILL INCLUDE: \n\n1. His full name \n2. His age. \n3. His Current Club's Name \n4. His Preferred Position on the Field. \n5. His Price. \n6. His Salary.";
+
+	cout<<"\n\n\t\t\tPress Any Key To Continue";
+	getch();
+	clrscr();
+	Instructions();
+	cout<<"\n\n\t\t\tPress Any Key To Continue";
+	getch();
+	clrscr();
+	do
+	{
+		Player P;
+		cout<<"\n\nThe Menu of Actions:\n";
+		cout<<"\n1. To Insert a new player into the market.";
+		cout<<"\n2. To Delete a player from the market.";
+		cout<<"\n3. To Transfer a player from one team to another.";
+		cout<<"\n4. To Search for a player in the market.";
+		cout<<"\n5. To Display the entire market.";
+		cout<<"\n6. To View the Instructions again.";
+		cout<<"\n7. To exit.";
+		cout<<"\n\n\nEnter Your Choice: ";
+		cin>>ch;
+		cout<<"\n\n\n\n\t\t\tPress Any Key To Continue";
+		getch();
+		clrscr();
+		switch(ch)
+		{
+			case 1: cout<<"\n\nYour choice is: 1. To Insert a new player into the market.";
+				cout<<"\n\n\n\n\nPress Any Key To Continue";
+				getch();
+				clrscr();
+				P.Insert();
+				cout<<"\n\n\n\n\n\t\t\tPress Any Key To Continue";
+				getch();
+				clrscr();
+				break;
+			case 2: cout<<"\n\nYour choice is: 2. To Delete a player from the market.";
+				cout<<"\n\n\n\n\nPress Any Key To Continue";
+				getch();
+				clrscr();
+				P.Delete();
+				cout<<"\n\n\n\n\n\t\t\tPress Any Key To Continue";
+				getch();
+				clrscr();
+				break;
+			case 3: cout<<"\n\nYour choice is: 3. To Transfer a player from one team to another.";
+				cout<<"\n\n\n\n\n\t\tPress Any Key To Continue";
+				getch();
+				clrscr();
+				P.Modify();
+				cout<<"\n\n\n\n\n\t\t\tPress Any Key To Continue";
+				getch();
+				clrscr();
+				break;
+			case 4: cout<<"\n\nYour choice is: 4. To Search for a player in the market.";
+				cout<<"\n\n\n\n\n\n\nPress Any Key To Continue";
+				getch();
+				clrscr();
+				P.Search();
+				cout<<"\n\n\n\n\n\t\t\tPress Any Key To Continue";
+				getch();
+				clrscr();
+				break;
+			case 5: cout<<"\n\nYour choice is: 5. To Display the entire market.";
+				cout<<"\n\n\n\n\n\n\nPress Any Key To Continue";
+				getch();
+				clrscr();
+				P.Display();
+				cout<<"\n\n\n\n\n\t\t\tPress Any Key To Continue";
+				getch();
+				clrscr();
+				break;
+			case 6: cout<<"\n\nYour choice is: 6. To View the Instructions again.";
+				cout<<"\n\n\n\n\nPress Any Ket To Continue";
+				getch();
+				clrscr();
+				Instructions();
+				cout<<"\n\n\t\t\t\tPress Any Key To Continue";
+				getch();
+				clrscr();
+				break;
+			case 7: cout<<"\n\nYour choice is: 7. To Exit.";
+				cout<<"\n\n\n\n\n\n\nPress Any Key To Continue";
+				getch();
+				clrscr();
+				char x;
+				cout<<"\nDo you really want to Exit? (Y/N)  The program will terminate upon Exiting. ";
+				cout<<"\n\n\nEnter your choice: ";
+				cin>>x;
+				if(x=='Y'||x=='y')
+				{
+					cout<<"\n\nExiting...";
+					getch();
+					return;
+				}
+				else
+				{
+					cout<<"\n\nYou chose to NOT exit.";
+					cout<<"\n\n\n\n\n\n\n\n\nPress Any Key To Continue";
+					getch();
+					clrscr();
+					break;
+				}
+			default: cout<<"\n\nInvalid Choice Entered.";
+				 cout<<"\n\n\n\n\n\n\nPress Any Key To Continue";
+				 getch();
+				 clrscr();
+				 break;
+		}
+	}
+	while(ch);
+	getch();
+	return;
+}
